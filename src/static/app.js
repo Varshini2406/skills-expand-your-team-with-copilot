@@ -484,6 +484,9 @@ function renderActivityCard(name, details) {
   const capacityPercentage = (takenSpots / totalSpots) * 100;
   const isFull = spotsLeft <= 0;
 
+  const difficulty =
+  spotsLeft <= 5 ? "Hard" : spotsLeft <= 10 ? "Medium" : "Easy";
+
   let capacityStatusClass = "capacity-available";
   if (isFull) {
     capacityStatusClass = "capacity-full";
