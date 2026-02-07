@@ -703,3 +703,22 @@ footer {
   background-color: #fdecea;
   color: #c62828;
 }
+
+/* 🌙 Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode header,
+body.dark-mode footer,
+body.dark-mode .activity-card,
+body.dark-mode .sidebar-filters {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+body.dark-mode button {
+  background-color: #333;
+  color: #fff;
+}
