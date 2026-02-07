@@ -679,3 +679,27 @@ footer {
 .social-share a:hover {
   opacity: 0.7;
 }
+
+.difficulty-badge {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+.difficulty-easy {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.difficulty-medium {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.difficulty-hard {
+  background-color: #fdecea;
+  color: #c62828;
+}

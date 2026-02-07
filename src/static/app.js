@@ -484,6 +484,9 @@ function renderActivityCard(name, details) {
   const capacityPercentage = (takenSpots / totalSpots) * 100;
   const isFull = spotsLeft <= 0;
 
+  const difficulty =
+  spotsLeft <= 5 ? "Hard" : spotsLeft <= 10 ? "Medium" : "Easy";
+
   let capacityStatusClass = "capacity-available";
   if (isFull) {
     capacityStatusClass = "capacity-full";
@@ -519,7 +522,13 @@ function renderActivityCard(name, details) {
 
   activityCard.innerHTML = `
     ${tagHtml}
-    <h4>${name}</h4>
+    <h4>
+  ${name}
+  <span class="difficulty-badge difficulty-${difficulty.toLowerCase()}">
+    ${difficulty}
+  </span>
+</h4>
+
     <p>${details.description}</p>
 
     <p class="tooltip">
