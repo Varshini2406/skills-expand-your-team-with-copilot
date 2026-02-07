@@ -522,7 +522,13 @@ function renderActivityCard(name, details) {
 
   activityCard.innerHTML = `
     ${tagHtml}
-    <h4>${name}</h4>
+    <h4>
+  ${name}
+  <span class="difficulty-badge difficulty-${difficulty.toLowerCase()}">
+    ${difficulty}
+  </span>
+</h4>
+
     <p>${details.description}</p>
 
     <p class="tooltip">
