@@ -473,122 +473,144 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Function to render a single activity card
-  function renderActivityCard(name, details) {
-    const activityCard = document.createElement("div");
-    activityCard.className = "activity-card";
+function renderActivityCard(name, details) {
+  const activityCard = document.createElement("div");
+  activityCard.className = "activity-card";
 
-    // Calculate spots and capacity
-    const totalSpots = details.max_participants;
-    const takenSpots = details.participants.length;
-    const spotsLeft = totalSpots - takenSpots;
-    const capacityPercentage = (takenSpots / totalSpots) * 100;
-    const isFull = spotsLeft <= 0;
+  // Calculate spots and capacity
+  const totalSpots = details.max_participants;
+  const takenSpots = details.participants.length;
+  const spotsLeft = totalSpots - takenSpots;
+  const capacityPercentage = (takenSpots / totalSpots) * 100;
+  const isFull = spotsLeft <= 0;
 
-    // Determine capacity status class
-    let capacityStatusClass = "capacity-available";
-    if (isFull) {
-      capacityStatusClass = "capacity-full";
-    } else if (capacityPercentage >= 75) {
-      capacityStatusClass = "capacity-near-full";
-    }
-
-    // Determine activity type
-    const activityType = getActivityType(name, details.description);
-    const typeInfo = activityTypes[activityType];
-
-    // Format the schedule using the new helper function
-    const formattedSchedule = formatSchedule(details);
-
-    // Create activity tag
-    const tagHtml = `
-      <span class="activity-tag" style="background-color: ${typeInfo.color}; color: ${typeInfo.textColor}">
-        ${typeInfo.label}
-      </span>
-    `;
-
-    // Create capacity indicator
-    const capacityIndicator = `
-      <div class="capacity-container ${capacityStatusClass}">
-        <div class="capacity-bar-bg">
-          <div class="capacity-bar-fill" style="width: ${capacityPercentage}%"></div>
-        </div>
-        <div class="capacity-text">
-          <span>${takenSpots} enrolled</span>
-          <span>${spotsLeft} spots left</span>
-        </div>
-      </div>
-    `;
-
-    activityCard.innerHTML = `
-      ${tagHtml}
-      <h4>${name}</h4>
-      <p>${details.description}</p>
-      <p class="tooltip">
-        <strong>Schedule:</strong> ${formattedSchedule}
-        <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
-      </p>
-      ${capacityIndicator}
-      <div class="participants-list">
-        <h5>Current Participants:</h5>
-        <ul>
-          ${details.participants
-            .map(
-              (email) => `
-            <li>
-              ${email}
-              ${
-                currentUser
-                  ? `
-                <span class="delete-participant tooltip" data-activity="${name}" data-email="${email}">
-                  ✖
-                  <span class="tooltip-text">Unregister this student</span>
-                </span>
-              `
-                  : ""
-              }
-            </li>
-          `
-            )
-            .join("")}
-        </ul>
-      </div>
-      <div class="activity-card-actions">
-        ${
-          currentUser
-            ? `
-          <button class="register-button" data-activity="${name}" ${
-                isFull ? "disabled" : ""
-              }>
-            ${isFull ? "Activity Full" : "Register Student"}
-          </button>
-        `
-            : `
-          <div class="auth-notice">
-            Teachers can register students.
-          </div>
-        `
-        }
-      </div>
-    `;
-
-    // Add click handlers for delete buttons
-    const deleteButtons = activityCard.querySelectorAll(".delete-participant");
-    deleteButtons.forEach((button) => {
-      button.addEventListener("click", handleUnregister);
-    });
-
-    // Add click handler for register button (only when authenticated)
-    if (currentUser) {
-      const registerButton = activityCard.querySelector(".register-button");
-      if (!isFull) {
-        registerButton.addEventListener("click", () => {
-          openRegistrationModal(name);
-        });
-      }
-    }
-
-    activitiesList.appendChild(activityCard);
+  let capacityStatusClass = "capacity-available";
+  if (isFull) {
+    capacityStatusClass = "capacity-full";
+  } else if (capacityPercentage >= 75) {
+    capacityStatusClass = "capacity-near-full";
   }
+
+  const activityType = getActivityType(name, details.description);
+  const typeInfo = activityTypes[activityType];
+  const formattedSchedule = formatSchedule(details);
+
+  const tagHtml = `
+    <span class="activity-tag" style="background-color: ${typeInfo.color}; color: ${typeInfo.textColor}">
+      ${typeInfo.label}
+    </span>
+  `;
+
+  const capacityIndicator = `
+    <div class="capacity-container ${capacityStatusClass}">
+      <div class="capacity-bar-bg">
+        <div class="capacity-bar-fill" style="width: ${capacityPercentage}%"></div>
+      </div>
+      <div class="capacity-text">
+        <span>${takenSpots} enrolled</span>
+        <span>${spotsLeft} spots left</span>
+      </div>
+    </div>
+  `;
+
+  // 🔹 Social share URL (safe + static)
+  const shareUrl = encodeURIComponent(window.location.href);
+  const shareText = encodeURIComponent(`Check out this activity: ${name}`);
+
+  activityCard.innerHTML = `
+    ${tagHtml}
+    <h4>${name}</h4>
+    <p>${details.description}</p>
+
+    <p class="tooltip">
+      <strong>Schedule:</strong> ${formattedSchedule}
+      <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
+    </p>
+
+    ${capacityIndicator}
+
+    <!-- ✅ Social Share Buttons -->
+    <div class="social-share">
+      <span>Share:</span>
+      <a
+        href="https://twitter.com/intent/tweet?text=${shareText}"
+        target="_blank"
+        aria-label="Share on Twitter"
+      >🐦</a>
+
+      <a
+        href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}"
+        target="_blank"
+        aria-label="Share on Facebook"
+      >📘</a>
+
+      <a
+        href="https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}"
+        target="_blank"
+        aria-label="Share on LinkedIn"
+      >🔗</a>
+    </div>
+
+    <div class="participants-list">
+      <h5>Current Participants:</h5>
+      <ul>
+        ${details.participants
+          .map(
+            (email) => `
+          <li>
+            ${email}
+            ${
+              currentUser
+                ? `
+              <span class="delete-participant tooltip" data-activity="${name}" data-email="${email}">
+                ✖
+                <span class="tooltip-text">Unregister this student</span>
+              </span>
+            `
+                : ""
+            }
+          </li>
+        `
+          )
+          .join("")}
+      </ul>
+    </div>
+
+    <div class="activity-card-actions">
+      ${
+        currentUser
+          ? `
+        <button class="register-button" data-activity="${name}" ${
+              isFull ? "disabled" : ""
+            }>
+          ${isFull ? "Activity Full" : "Register Student"}
+        </button>
+      `
+          : `
+        <div class="auth-notice">
+          Teachers can register students.
+        </div>
+      `
+      }
+    </div>
+  `;
+
+  const deleteButtons = activityCard.querySelectorAll(".delete-participant");
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", handleUnregister);
+  });
+
+  if (currentUser) {
+    const registerButton = activityCard.querySelector(".register-button");
+    if (!isFull) {
+      registerButton.addEventListener("click", () => {
+        openRegistrationModal(name);
+      });
+    }
+  }
+
+  activitiesList.appendChild(activityCard);
+}
 
   // Event listeners for search and filter
   searchInput.addEventListener("input", (event) => {
